@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Market Demo Trading Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #0a0e27;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        .disclaimer {
+            background: linear-gradient(90deg, #ff6b6b, #feca57);
+            padding: 12px;
+            text-align: center;
+            font-weight: 600;
+            color: #000;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .market-tabs {
+            display: flex;
+            gap: 10px;
+            background: rgba(255,255,255,0.1);
+            padding: 5px;
+            border-radius: 10px;
+        }
+
+        .market-tab {
+            padding: 10px 20px;
+            border: none;
+            background: transparent;
+            color: #fff;
+            cursor: pointer;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .market-tab.active {
+            background: rgba(255,255,255,0.2);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .market-tab:hover {
+            background: rgba(255,255,255,0.15);
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .wallet-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .wallet-card {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+
+        .wallet-card h3 {
+            font-size: 14px;
+            opacity: 0.8;
+            margin-bottom: 10px;
+        }
+
+        .wallet-balance {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .wallet-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 300px 1fr 350px;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .watchlist {
+            background: #1a1f3a;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+
+        .watchlist h3 {
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+
+        .symbol-item {
+            padding: 15px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .symbol-item:hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateX(5px);
+        }
+
+        .symbol-item.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .symbol-name {
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .symbol-price {
+            text-align: right;
+        }
+
+        .price-value {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .price-change {
+            font-size: 12px;
+            margin-top: 3px;
+        }
+
+        .price-change.positive {
+            color: #26a69a;
+        }
+
+        .price-change.negative {
+            color: #ef5350;
+        }
+
+        .chart-section {
+            background: #1a1f3a;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .chart-title {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .chart-price {
+            font-size: 32px;
+            font-weight: bold;
+            color: #26a69a;
+        }
+
+        .chart-intervals {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 20px;
+        }
+
+        .interval-btn {
+            padding: 6px 12px;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: transparent;
+            color: #fff;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .interval-btn.active {
+            background: #667eea;
+            border-color: #667eea;
+        }
+
+        .chart-canvas {
+            width: 100%;
+            height: 400px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 10px;
+            position: relative;
+        }
+
+        .order-panel {
+            background: #1a1f3a;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+
+        .order-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .order-tab {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .order-tab.active {
+            background: #26a69a;
+        }
+
+        .order-tab.sell.active {
+            background: #ef5350;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .order-summary {
+            background: rgba(255,255,255,0.05);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .summary-row.total {
+            font-size: 16px;
+            font-weight: bold;
+            padding-top: 10px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .btn-buy {
+            background: #26a69a;
+            color: #fff;
+            width: 100%;
+            padding: 15px;
+            font-size: 16px;
+        }
+
+        .btn-buy:hover {
+            background: #2bbbad;
+        }
+
+        .btn-sell {
+            background: #ef5350;
+            color: #fff;
+            width: 100%;
+            padding: 15px;
+            font-size: 16px;
+        }
+
+        .btn-sell:hover {
+            background: #f44336;
+        }
+
+        .positions-section {
+            background: #1a1f3a;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+
+        .section-tabs {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid rgba(255,255,255,0.1);
+        }
+
+        .section-tab {
+            padding: 10px 20px;
+            border: none;
+            background: transparent;
+            color: rgba(255,255,255,0.6);
+            cursor: pointer;
+            font-weight: 600;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+        }
+
+        .section-tab.active {
+            color: #fff;
+            border-bottom-color: #667eea;
+        }
+
+        .positions-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .positions-table th {
+            text-align: left;
+            padding: 12px;
+            font-size: 12px;
+            opacity: 0.6;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .positions-table td {
+            padding: 15px 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .positions-table tr:hover {
+            background: rgba(255,255,255,0.02);
+        }
+
+        .pnl-positive {
+            color: #26a69a;
+            font-weight: 600;
+        }
+
+        .pnl-negative {
+            color: #ef5350;
+            font-weight: 600;
+        }
+
+        .close-btn {
+            padding: 6px 12px;
+            background: #ef5350;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .close-btn:hover {
+            background: #f44336;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            opacity: 0.5;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #1a1f3a;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .modal-header {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 1200px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .live-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #26a69a;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: rgba(255,255,255,0.05);
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.6;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="disclaimer">
+        ⚠️ DEMO TRADING PLATFORM - FOR EDUCATIONAL PURPOSES ONLY - NO REAL MONEY INVOLVED
+    </div>
+
+    <div class="header">
+        <div class="logo">
+            <span>📊</span>
+            <span>TradePro Demo</span>
+        </div>
+        <div class="market-tabs">
+            <button class="market-tab active" onclick="switchMarket('indian')">🇮🇳 Indian Markets</button>
+            <button class="market-tab" onclick="switchMarket('crypto')">₿ Crypto</button>
+            <button class="market-tab" onclick="switchMarket('forex')">💱 Forex</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Wallet Section -->
+        <div class="wallet-section">
+            <div class="wallet-card">
+                <h3>Indian Markets Wallet</h3>
+                <div class="wallet-balance" id="indianBalance">₹10,00,000</div>
+                <div class="wallet-actions">
+                    <button class="btn btn-primary" onclick="editBalance('indian')">Edit Balance</button>
+                    <button class="btn btn-secondary" onclick="resetBalance('indian')">Reset</button>
+                </div>
+            </div>
+            <div class="wallet-card">
+                <h3>Crypto Wallet</h3>
+                <div class="wallet-balance" id="cryptoBalance">$10,000</div>
+                <div class="wallet-actions">
+                    <button class="btn btn-primary" onclick="editBalance('crypto')">Edit Balance</button>
+                    <button class="btn btn-secondary" onclick="resetBalance('crypto')">Reset</button>
+                </div>
+            </div>
+            <div class="wallet-card">
+                <h3>Forex Wallet</h3>
+                <div class="wallet-balance" id="forexBalance">$10,000</div>
+                <div class="wallet-actions">
+                    <button class="btn btn-primary" onclick="editBalance('forex')">Edit Balance</button>
+                    <button class="btn btn-secondary" onclick="resetBalance('forex')">Reset</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Trading Grid -->
+        <div class="main-grid">
+            <!-- Watchlist -->
+            <div class="watchlist">
+                <h3><span class="live-indicator"></span>Market Watch</h3>
+                <div id="watchlistContainer"></div>
+            </div>
+
+            <!-- Chart Section -->
+            <div class="chart-section">
+                <div class="chart-header">
+                    <div>
+                        <div class="chart-title" id="chartSymbol">RELIANCE</div>
+                        <div class="chart-price" id="chartPrice">₹2,500.00</div>
+                    </div>
+                </div>
+                <div class="chart-intervals">
+                    <button class="interval-btn active">1m</button>
+                    <button class="interval-btn">5m</button>
+                    <button class="interval-btn">15m</button>
+                    <button class="interval-btn">1h</button>
+                    <button class="interval-btn">1d</button>
+                </div>
+                <div class="chart-canvas" id="chartCanvas">
+                    <canvas id="priceChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Order Panel -->
+            <div class="order-panel">
+                <div class="order-tabs">
+                    <button class="order-tab active" onclick="setOrderSide('buy')">BUY</button>
+                    <button class="order-tab sell" onclick="setOrderSide('sell')">SELL</button>
+                </div>
+
+                <form id="orderForm" onsubmit="placeOrder(event)">
+                    <div class="form-group">
+                        <label>Order Type</label>
+                        <select id="orderType">
+                            <option value="market">Market Order</option>
+                            <option value="limit">Limit Order</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="limitPriceGroup" style="display:none;">
+                        <label>Limit Price</label>
+                        <input type="number" id="limitPrice" step="0.01" placeholder="0.00">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Quantity</label>
+                        <input type="number" id="quantity" step="1" placeholder="0" required>
+                    </div>
+
+                    <div class="order-summary">
+                        <div class="summary-row">
+                            <span>Price:</span>
+                            <span id="summaryPrice">₹0.00</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Quantity:</span>
+                            <span id="summaryQty">0</span>
+                        </div>
+                        <div class="summary-row total">
+                            <span>Total:</span>
+                            <span id="summaryTotal">₹0.00</span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-buy" id="orderButton">BUY</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Portfolio Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Total Portfolio Value</div>
+                <div class="stat-value" id="portfolioValue">₹10,00,000</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Today's P&L</div>
+                <div class="stat-value pnl-positive" id="todayPnL">+₹0.00</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Total P&L</div>
+                <div class="stat-value pnl-positive" id="totalPnL">+₹0.00</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Win Rate</div>
+                <div class="stat-value" id="winRate">0%</div>
+            </div>
+        </div>
+
+        <!-- Positions Section -->
+        <div class="positions-section">
+            <div class="section-tabs">
+                <button class="section-tab active" onclick="showTab('positions')">Positions</button>
+                <button class="section-tab" onclick="showTab('orders')">Orders</button>
+                <button class="section-tab" onclick="showTab('trades')">Trade History</button>
+            </div>
+
+            <div id="positionsTab">
+                <table class="positions-table">
+                    <thead>
+                        <tr>
+                            <th>Symbol</th>
+                            <th>Qty</th>
+                            <th>Avg Price</th>
+                            <th>Current Price</th>
+                            <th>P&L</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="positionsBody">
+                        <tr>
+                            <td colspan="6">
+                                <div class="empty-state">No open positions</div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="ordersTab" style="display:none;">
+                <table class="positions-table">
+                    <thead>
+                        <tr>
+                            <th>Symbol</th>
+                            <th>Type</th>
+                            <th>Side</th>
+                            <th>Qty</th>
+                            <th>Price</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ordersBody">
+                        <tr>
+                            <td colspan="6">
+                                <div class="empty-state">No orders</div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="tradesTab" style="display:none;">
+                <table class="positions-table">
+                    <thead>
+                        <tr>
+                            <th>Symbol</th>
+                            <th>Side</th>
+                            <th>Qty</th>
+                            <th>Entry</th>
+                            <th>Exit</th>
+                            <th>P&L</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tradesBody">
+                        <tr>
+                            <td colspan="6">
+                                <div class="empty-state">No trade history</div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Balance Modal -->
+    <div class="modal" id="balanceModal">
+        <div class="modal-content">
+            <div class="modal-header">Edit Balance</div>
+            <div class="form-group">
+                <label>New Balance</label>
+                <input type="number" id="newBalance" step="0.01" placeholder="0.00">
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-primary" onclick="saveBalance()">Save</button>
+                <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Market Data
+        const marketData = {
+            indian: {
+                symbols: ['RELIANCE', 'TCS', 'INFY', 'HDFCBANK', 'ICICIBANK', 'SBIN'],
+                prices: {},
+                currency: '₹',
+                defaultBalance: 1000000
+            },
+            crypto: {
+                symbols: ['BTC/USDT', 'ETH/USDT', 'SOL/USDT', 'BNB/USDT', 'XRP/USDT', 'ADA/USDT'],
+                prices: {},
+                currency: '$',
+                defaultBalance: 10000
+            },
+            forex: {
+                symbols: ['EUR/USD', 'GBP/USD', 'USD/JPY', 'AUD/USD', 'USD/CAD', 'NZD/USD'],
+                prices: {},
+                currency: '$',
+                defaultBalance: 10000
+            }
+        };
+
+        // Initialize prices
+        marketData.indian.symbols.forEach(symbol => {
+            marketData.indian.prices[symbol] = 2000 + Math.random() * 1000;
+        });
+        marketData.crypto.symbols.forEach(symbol => {
+            const base = symbol.split('/')[0];
+            if (base === 'BTC') marketData.crypto.prices[symbol] = 45000 + Math.random() * 5000;
+            else if (base === 'ETH') marketData.crypto.prices[symbol] = 2500 + Math.random() * 500;
+            else marketData.crypto.prices[symbol] = 50 + Math.random() * 150;
+        });
+        marketData.forex.symbols.forEach(symbol => {
+            marketData.forex.prices[symbol] = 1 + Math.random() * 0.5;
+        });
+
+        // App State
+        let currentMarket = 'indian';
+        let currentSymbol = 'RELIANCE';
+        let orderSide = 'buy';
+        let editingMarket = null;
+
+        let wallets = {
+            indian: 1000000,
+            crypto: 10000,
+            forex: 10000
+        };
+
+        let positions = [];
+        let orders = [];
+        let trades = [];
+
+        // Load from localStorage
+        function loadData() {
+            const saved = localStorage.getItem('tradingAppData');
+            if (saved) {
+                const data = JSON.parse(saved);
+                wallets = data.wallets || wallets;
+                positions = data.positions || [];
+                orders = data.orders || [];
+                trades = data.trades || [];
+                updateWalletDisplay();
+                updatePositionsDisplay();
+                updateStats();
+            }
+        }
+
+        // Save to localStorage
+        function saveData() {
+            localStorage.setItem('tradingAppData', JSON.stringify({
+                wallets,
+                positions,
+                orders,
+                trades
+            }));
+        }
+
+        // Switch Market
+        function switchMarket(market) {
+            currentMarket = market;
+            currentSymbol = marketData[market].symbols[0];
+            
+            document.querySelectorAll('.market-tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            updateWatchlist();
+            updateChart();
+            updateOrderSummary();
+        }
+
+        // Update Watchlist
+        function updateWatchlist() {
+            const container = document.getElementById('watchlistContainer');
+            const symbols = marketData[currentMarket].symbols;
+            const currency = marketData[currentMarket].currency;
+            
+            container.innerHTML = symbols.map(symbol => {
+                const price = marketData[currentMarket].prices[symbol];
+                const change = (Math.random() - 0.5) * 5;
+                const changeClass = change >= 0 ? 'positive' : 'negative';
+                
+                return `
+                    <div class="symbol-item ${symbol === currentSymbol ? 'active' : ''}" onclick="selectSymbol('${symbol}')">
+                        <div>
+                            <div class="symbol-name">${symbol}</div>
+                        </div>
+                        <div class="symbol-price">
+                            <div class="price-value">${currency}${price.toFixed(2)}</div>
+                            <div class="price-change ${changeClass}">${change >= 0 ? '+' : ''}${change.toFixed(2)}%</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Select Symbol
+        function selectSymbol(symbol) {
+            currentSymbol = symbol;
+            updateWatchlist();
+            updateChart();
+            updateOrderSummary();
+        }
+
+        // Update Chart
+        function updateChart() {
+            const price = marketData[currentMarket].prices[currentSymbol];
+            const currency = marketData[currentMarket].currency;
+            
+            document.getElementById('chartSymbol').textContent = currentSymbol;
+            document.getElementById('chartPrice').textContent = `${currency}${price.toFixed(2)}`;
+            
+            // Simple chart simulation
+            const canvas = document.getElementById('priceChart');
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 400;
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = '#26a69a';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            
+            const points = 50;
+            for (let i = 0; i < points; i++) {
+                const x = (canvas.width / points) * i;
+                const y = canvas.height / 2 + (Math.sin(i / 5) * 50) + (Math.random() - 0.5) * 30;
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+        }
+
+        // Set Order Side
+        function setOrderSide(side) {
+            orderSide = side;
+            document.querySelectorAll('.order-tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            const button = document.getElementById('orderButton');
+            if (side === 'buy') {
+                button.className = 'btn btn-buy';
+                button.textContent = 'BUY';
+            } else {
+                button.className = 'btn btn-sell';
+                button.textContent = 'SELL';
+            }
+        }
+
+        // Update Order Summary
+        function updateOrderSummary() {
+            const qty = parseFloat(document.getElementById('quantity').value) || 0;
+            const orderType = document.getElementById('orderType').value;
+            const limitPrice = parseFloat(document.getElementById('limitPrice').value) || 0;
+            
+            const price = orderType === 'limit' ? limitPrice : marketData[currentMarket].prices[currentSymbol];
+            const total = price * qty;
+            const currency = marketData[currentMarket].currency;
+            
+            document.getElementById('summaryPrice').textContent = `${currency}${price.toFixed(2)}`;
+            document.getElementById('summaryQty').textContent = qty;
+            document.getElementById('summaryTotal').textContent = `${currency}${total.toFixed(2)}`;
+        }
+
+        // Order Type Change
+        document.getElementById('orderType').addEventListener('change', function() {
+            const limitGroup = document.getElementById('limitPriceGroup');
+            if (this.value === 'limit') {
+                limitGroup.style.display = 'block';
+            } else {
+                limitGroup.style.display = 'none';
+            }
+            updateOrderSummary();
+        });
+
+        document.getElementById('quantity').addEventListener('input', updateOrderSummary);
+        document.getElementById('limitPrice').addEventListener('input', updateOrderSummary);
+
+        // Place Order
+        function placeOrder(e) {
+            e.preventDefault();
+            
+            const qty = parseFloat(document.getElementById('quantity').value);
+            const orderType = document.getElementById('orderType').value;
+            const limitPrice = parseFloat(document.getElementById('limitPrice').value) || 0;
+            const price = orderType === 'limit' ? limitPrice : marketData[currentMarket].prices[currentSymbol];
+            const total = price * qty;
+            
+            if (orderSide === 'buy') {
+                if (wallets[currentMarket] < total) {
+                    alert('Insufficient balance!');
+                    return;
+                }
+                
+                wallets[currentMarket] -= total;
+                
+                // Add to positions
+                const existingPos = positions.find(p => p.market === currentMarket && p.symbol === currentSymbol && p.side === 'buy');
+                if (existingPos) {
+                    const totalQty = existingPos.quantity + qty;
+                    existingPos.avgPrice = ((existingPos.avgPrice * existingPos.quantity) + (price * qty)) / totalQty;
+                    existingPos.quantity = totalQty;
+                } else {
+                    positions.push({
+                        id: Date.now(),
+                        market: currentMarket,
+                        symbol: currentSymbol,
+                        side: 'buy',
+                        quantity: qty,
+                        avgPrice: price,
+                        openedAt: new Date()
+                    });
+                }
+                
+                alert(`✅ BUY order executed!\n${qty} ${currentSymbol} @ ${marketData[currentMarket].currency}${price.toFixed(2)}`);
+            } else {
+                // Sell
+                const position = positions.find(p => p.market === currentMarket && p.symbol === currentSymbol && p.side === 'buy');
+                if (!position || position.quantity < qty) {
+                    alert('Insufficient position to sell!');
+                    return;
+                }
+                
+                const pnl = (price - position.avgPrice) * qty;
+                wallets[currentMarket] += total;
+                
+                // Add to trades
+                trades.unshift({
+                    market: currentMarket,
+                    symbol: currentSymbol,
+                    side: 'buy',
+                    quantity: qty,
+                    entryPrice: position.avgPrice,
+                    exitPrice: price,
+                    pnl: pnl,
+                    closedAt: new Date()
+                });
+                
+                // Update position
+                position.quantity -= qty;
+                if (position.quantity === 0) {
+                    positions = positions.filter(p => p.id !== position.id);
+                }
+                
+                alert(`✅ SELL order executed!\n${qty} ${currentSymbol} @ ${marketData[currentMarket].currency}${price.toFixed(2)}\nP&L: ${marketData[currentMarket].currency}${pnl.toFixed(2)}`);
+            }
+            
+            document.getElementById('orderForm').reset();
+            updateOrderSummary();
+            updateWalletDisplay();
+            updatePositionsDisplay();
+            updateStats();
+            saveData();
+        }
+
+        // Update Wallet Display
+        function updateWalletDisplay() {
+            document.getElementById('indianBalance').textContent = `₹${wallets.indian.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+            document.getElementById('cryptoBalance').textContent = `$${wallets.crypto.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+            document.getElementById('forexBalance').textContent = `$${wallets.forex.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+        }
+
+        // Update Positions Display
+        function updatePositionsDisplay() {
+            const tbody = document.getElementById('positionsBody');
+            const marketPositions = positions.filter(p => p.market === currentMarket);
+            
+            if (marketPositions.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state">No open positions</div></td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = marketPositions.map(pos => {
+                const currentPrice = marketData[pos.market].prices[pos.symbol];
+                const pnl = (currentPrice - pos.avgPrice) * pos.quantity;
+                const pnlClass = pnl >= 0 ? 'pnl-positive' : 'pnl-negative';
+                const currency = marketData[pos.market].currency;
+                
+                return `
+                    <tr>
+                        <td><strong>${pos.symbol}</strong></td>
+                        <td>${pos.quantity}</td>
+                        <td>${currency}${pos.avgPrice.toFixed(2)}</td>
+                        <td>${currency}${currentPrice.toFixed(2)}</td>
+                        <td class="${pnlClass}">${pnl >= 0 ? '+' : ''}${currency}${pnl.toFixed(2)}</td>
+                        <td><button class="close-btn" onclick="closePosition(${pos.id})">Close</button></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Close Position
+        function closePosition(posId) {
+            const position = positions.find(p => p.id === posId);
+            if (!position) return;
+            
+            if (confirm(`Close position: ${position.quantity} ${position.symbol}?`)) {
+                const currentPrice = marketData[position.market].prices[position.symbol];
+                const pnl = (currentPrice - position.avgPrice) * position.quantity;
+                const total = currentPrice * position.quantity;
+                
+                wallets[position.market] += total;
+                
+                trades.unshift({
+                    market: position.market,
+                    symbol: position.symbol,
+                    side: position.side,
+                    quantity: position.quantity,
+                    entryPrice: position.avgPrice,
+                    exitPrice: currentPrice,
+                    pnl: pnl,
+                    closedAt: new Date()
+                });
+                
+                positions = positions.filter(p => p.id !== posId);
+                
+                updateWalletDisplay();
+                updatePositionsDisplay();
+                updateStats();
+                saveData();
+                
+                alert(`Position closed!\nP&L: ${marketData[position.market].currency}${pnl.toFixed(2)}`);
+            }
+        }
+
+        // Update Stats
+        function updateStats() {
+            let totalValue = 0;
+            let totalPnL = 0;
+            
+            // Calculate from positions
+            positions.forEach(pos => {
+                const currentPrice = marketData[pos.market].prices[pos.symbol];
+                const posValue = currentPrice * pos.quantity;
+                const posPnL = (currentPrice - pos.avgPrice) * pos.quantity;
+                totalValue += posValue;
+                totalPnL += posPnL;
+            });
+            
+            // Add wallet balances
+            totalValue += wallets.indian + wallets.crypto + wallets.forex;
+            
+            // Calculate from trades
+            const tradePnL = trades.reduce((sum, t) => sum + t.pnl, 0);
+            totalPnL += tradePnL;
+            
+            // Win rate
+            const winningTrades = trades.filter(t => t.pnl > 0).length;
+            const winRate = trades.length > 0 ? (winningTrades / trades.length * 100).toFixed(1) : 0;
+            
+            document.getElementById('portfolioValue').textContent = `₹${totalValue.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+            document.getElementById('totalPnL').textContent = `${totalPnL >= 0 ? '+' : ''}₹${totalPnL.toFixed(2)}`;
+            document.getElementById('totalPnL').className = totalPnL >= 0 ? 'stat-value pnl-positive' : 'stat-value pnl-negative';
+            document.getElementById('winRate').textContent = `${winRate}%`;
+        }
+
+        // Show Tab
+        function showTab(tab) {
+            document.querySelectorAll('.section-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            document.getElementById('positionsTab').style.display = 'none';
+            document.getElementById('ordersTab').style.display = 'none';
+            document.getElementById('tradesTab').style.display = 'none';
+            
+            if (tab === 'positions') {
+                document.getElementById('positionsTab').style.display = 'block';
+                updatePositionsDisplay();
+            } else if (tab === 'orders') {
+                document.getElementById('ordersTab').style.display = 'block';
+            } else if (tab === 'trades') {
+                document.getElementById('tradesTab').style.display = 'block';
+                updateTradesDisplay();
+            }
+        }
+
+        // Update Trades Display
+        function updateTradesDisplay() {
+            const tbody = document.getElementById('tradesBody');
+            const marketTrades = trades.filter(t => t.market === currentMarket);
+            
+            if (marketTrades.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state">No trade history</div></td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = marketTrades.map(trade => {
+                const pnlClass = trade.pnl >= 0 ? 'pnl-positive' : 'pnl-negative';
+                const currency = marketData[trade.market].currency;
+                
+                return `
+                    <tr>
+                        <td><strong>${trade.symbol}</strong></td>
+                        <td>${trade.side.toUpperCase()}</td>
+                        <td>${trade.quantity}</td>
+                        <td>${currency}${trade.entryPrice.toFixed(2)}</td>
+                        <td>${currency}${trade.exitPrice.toFixed(2)}</td>
+                        <td class="${pnlClass}">${trade.pnl >= 0 ? '+' : ''}${currency}${trade.pnl.toFixed(2)}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Edit Balance
+        function editBalance(market) {
+            editingMarket = market;
+            document.getElementById('newBalance').value = wallets[market];
+            document.getElementById('balanceModal').classList.add('active');
+        }
+
+        // Save Balance
+        function saveBalance() {
+            const newBalance = parseFloat(document.getElementById('newBalance').value);
+            if (newBalance >= 0) {
+                wallets[editingMarket] = newBalance;
+                updateWalletDisplay();
+                saveData();
+                closeModal();
+            }
+        }
+
+        // Reset Balance
+        function resetBalance(market) {
+            if (confirm('Reset balance to default?')) {
+                wallets[market] = marketData[market].defaultBalance;
+                updateWalletDisplay();
+                saveData();
+            }
+        }
+
+        // Close Modal
+        function closeModal() {
+            document.getElementById('balanceModal').classList.remove('active');
+        }
+
+        // Simulate live price updates
+        setInterval(() => {
+            Object.keys(marketData).forEach(market => {
+                marketData[market].symbols.forEach(symbol => {
+                    const change = (Math.random() - 0.5) * marketData[market].prices[symbol] * 0.001;
+                    marketData[market].prices[symbol] += change;
+                });
+            });
+            
+            updateWatchlist();
+            updateChart();
+            updatePositionsDisplay();
+            updateStats();
+        }, 2000);
+
+        // Initialize
+        loadData();
+        updateWatchlist();
+        updateChart();
+        updateWalletDisplay();
+        updatePositionsDisplay();
+        updateStats();
+    </script>
+</body>
+</html>
