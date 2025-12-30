@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Multi-Market Demo Trading Platform - Live Data</title>
+    <title>Options Trading Demo Platform - Live NSE Data</title>
     <style>
         * {
             margin: 0;
@@ -71,10 +71,6 @@
             box-shadow: 0 2px 10px rgba(0,0,0,0.2);
         }
 
-        .market-tab:hover {
-            background: rgba(255,255,255,0.15);
-        }
-
         .container {
             max-width: 1600px;
             margin: 0 auto;
@@ -137,13 +133,9 @@
             color: #fff;
         }
 
-        .btn-secondary:hover {
-            background: rgba(255,255,255,0.2);
-        }
-
         .main-grid {
             display: grid;
-            grid-template-columns: 300px 1fr 350px;
+            grid-template-columns: 300px 1fr 400px;
             gap: 20px;
             margin-bottom: 30px;
         }
@@ -169,9 +161,6 @@
             margin-bottom: 10px;
             cursor: pointer;
             transition: all 0.3s;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
         }
 
         .symbol-item:hover {
@@ -186,10 +175,13 @@
         .symbol-name {
             font-weight: 600;
             font-size: 16px;
+            margin-bottom: 5px;
         }
 
         .symbol-price {
-            text-align: right;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .price-value {
@@ -199,7 +191,6 @@
 
         .price-change {
             font-size: 12px;
-            margin-top: 3px;
         }
 
         .price-change.positive {
@@ -218,58 +209,44 @@
         }
 
         .chart-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
             margin-bottom: 20px;
         }
 
         .chart-title {
             font-size: 24px;
             font-weight: bold;
+            margin-bottom: 5px;
         }
 
         .chart-price {
             font-size: 32px;
             font-weight: bold;
             color: #26a69a;
+            margin-bottom: 10px;
         }
 
         .chart-meta {
-            display: flex;
-            gap: 20px;
-            margin-top: 10px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .meta-item {
+            background: rgba(255,255,255,0.05);
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .meta-label {
+            font-size: 11px;
+            opacity: 0.6;
+            margin-bottom: 5px;
+        }
+
+        .meta-value {
             font-size: 14px;
-            opacity: 0.8;
-        }
-
-        .chart-intervals {
-            display: flex;
-            gap: 5px;
-            margin-bottom: 20px;
-        }
-
-        .interval-btn {
-            padding: 6px 12px;
-            border: 1px solid rgba(255,255,255,0.2);
-            background: transparent;
-            color: #fff;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 12px;
-        }
-
-        .interval-btn.active {
-            background: #667eea;
-            border-color: #667eea;
-        }
-
-        .chart-canvas {
-            width: 100%;
-            height: 400px;
-            background: rgba(0,0,0,0.2);
-            border-radius: 10px;
-            position: relative;
+            font-weight: bold;
         }
 
         .order-panel {
@@ -326,10 +303,32 @@
             font-size: 14px;
         }
 
-        .form-group input:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: #667eea;
+        .option-type-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .option-type-btn {
+            padding: 12px;
+            border: 2px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .option-type-btn.active.call {
+            background: #26a69a;
+            border-color: #26a69a;
+        }
+
+        .option-type-btn.active.put {
+            background: #ef5350;
+            border-color: #ef5350;
         }
 
         .order-summary {
@@ -361,20 +360,12 @@
             font-size: 16px;
         }
 
-        .btn-buy:hover {
-            background: #2bbbad;
-        }
-
         .btn-sell {
             background: #ef5350;
             color: #fff;
             width: 100%;
             padding: 15px;
             font-size: 16px;
-        }
-
-        .btn-sell:hover {
-            background: #f44336;
         }
 
         .positions-section {
@@ -425,10 +416,6 @@
             border-bottom: 1px solid rgba(255,255,255,0.05);
         }
 
-        .positions-table tr:hover {
-            background: rgba(255,255,255,0.02);
-        }
-
         .pnl-positive {
             color: #26a69a;
             font-weight: 600;
@@ -447,10 +434,6 @@
             border-radius: 6px;
             cursor: pointer;
             font-size: 12px;
-        }
-
-        .close-btn:hover {
-            background: #f44336;
         }
 
         .empty-state {
@@ -496,12 +479,6 @@
             margin-top: 20px;
         }
 
-        @media (max-width: 1200px) {
-            .main-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
         .live-indicator {
             display: inline-block;
             width: 8px;
@@ -541,34 +518,44 @@
             font-weight: bold;
         }
 
-        .loading {
-            text-align: center;
-            padding: 20px;
-            opacity: 0.6;
+        .option-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-left: 5px;
         }
 
-        .error-message {
+        .option-badge.call {
+            background: rgba(38, 166, 154, 0.2);
+            color: #26a69a;
+        }
+
+        .option-badge.put {
             background: rgba(239, 83, 80, 0.2);
-            border: 1px solid #ef5350;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
             color: #ef5350;
+        }
+
+        @media (max-width: 1200px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
     <div class="disclaimer">
-        ⚠️ DEMO TRADING PLATFORM - FOR EDUCATIONAL PURPOSES ONLY - NO REAL MONEY INVOLVED - LIVE NSE DATA
+        ⚠️ DEMO OPTIONS TRADING PLATFORM - FOR EDUCATIONAL PURPOSES ONLY - NO REAL MONEY - LIVE NSE F&O DATA
     </div>
 
     <div class="header">
         <div class="logo">
             <span>📊</span>
-            <span>TradePro Demo - Live NSE Data</span>
+            <span>Options Trading Demo - Live NSE F&O</span>
         </div>
         <div class="market-tabs">
-            <button class="market-tab active" onclick="switchMarket('indian')">🇮🇳 Indian Markets (LIVE)</button>
+            <button class="market-tab active" onclick="switchMarket('options')">📋 Options (F&O)</button>
             <button class="market-tab" onclick="switchMarket('crypto')">₿ Crypto</button>
             <button class="market-tab" onclick="switchMarket('forex')">💱 Forex</button>
         </div>
@@ -578,11 +565,11 @@
         <!-- Wallet Section -->
         <div class="wallet-section">
             <div class="wallet-card">
-                <h3>Indian Markets Wallet</h3>
-                <div class="wallet-balance" id="indianBalance">₹10,00,000</div>
+                <h3>Options Trading Wallet</h3>
+                <div class="wallet-balance" id="optionsBalance">₹10,00,000</div>
                 <div class="wallet-actions">
-                    <button class="btn btn-primary" onclick="editBalance('indian')">Edit Balance</button>
-                    <button class="btn btn-secondary" onclick="resetBalance('indian')">Reset</button>
+                    <button class="btn btn-primary" onclick="editBalance('options')">Edit Balance</button>
+                    <button class="btn btn-secondary" onclick="resetBalance('options')">Reset</button>
                 </div>
             </div>
             <div class="wallet-card">
@@ -607,33 +594,51 @@
         <div class="main-grid">
             <!-- Watchlist -->
             <div class="watchlist">
-                <h3><span class="live-indicator"></span>Market Watch</h3>
+                <h3><span class="live-indicator"></span>Underlying Assets</h3>
                 <div id="watchlistContainer">
-                    <div class="loading">Loading live data...</div>
+                    <div class="empty-state">Loading live data...</div>
                 </div>
             </div>
 
             <!-- Chart Section -->
             <div class="chart-section">
                 <div class="chart-header">
-                    <div>
-                        <div class="chart-title" id="chartSymbol">Loading...</div>
-                        <div class="chart-price" id="chartPrice">₹0.00</div>
-                        <div class="chart-meta">
-                            <span>Open: <strong id="openPrice">-</strong></span>
-                            <span>High: <strong id="highPrice">-</strong></span>
-                            <span>Low: <strong id="lowPrice">-</strong></span>
-                            <span>Volume: <strong id="volume">-</strong></span>
+                    <div class="chart-title" id="chartSymbol">Loading...</div>
+                    <div class="chart-price" id="chartPrice">₹0.00</div>
+                    <div class="chart-meta">
+                        <div class="meta-item">
+                            <div class="meta-label">OPEN</div>
+                            <div class="meta-value" id="openPrice">-</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">HIGH</div>
+                            <div class="meta-value" id="highPrice">-</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">LOW</div>
+                            <div class="meta-value" id="lowPrice">-</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">VOLUME</div>
+                            <div class="meta-value" id="volume">-</div>
                         </div>
                     </div>
-                </div>
-                <div class="chart-canvas" id="chartCanvas">
-                    <canvas id="priceChart"></canvas>
                 </div>
             </div>
 
             <!-- Order Panel -->
             <div class="order-panel">
+                <h3 style="margin-bottom: 15px;">Place Options Order</h3>
+                
+                <div class="option-type-selector">
+                    <button class="option-type-btn call active" onclick="selectOptionType('call')">
+                        CALL (CE)
+                    </button>
+                    <button class="option-type-btn put" onclick="selectOptionType('put')">
+                        PUT (PE)
+                    </button>
+                </div>
+
                 <div class="order-tabs">
                     <button class="order-tab active" onclick="setOrderSide('buy')">BUY</button>
                     <button class="order-tab sell" onclick="setOrderSide('sell')">SELL</button>
@@ -641,39 +646,58 @@
 
                 <form id="orderForm" onsubmit="placeOrder(event)">
                     <div class="form-group">
-                        <label>Order Type</label>
-                        <select id="orderType" onchange="updateOrderSummary()">
-                            <option value="market">Market Order</option>
-                            <option value="limit">Limit Order</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group" id="limitPriceGroup" style="display:none;">
-                        <label>Limit Price</label>
-                        <input type="number" id="limitPrice" step="0.01" placeholder="0.00" oninput="updateOrderSummary()">
+                        <label>Strike Price</label>
+                        <input type="number" id="strikePrice" step="50" placeholder="e.g., 1550" required oninput="updateOrderSummary()">
                     </div>
 
                     <div class="form-group">
-                        <label>Quantity</label>
-                        <input type="number" id="quantity" step="1" placeholder="0" required oninput="updateOrderSummary()">
+                        <label>Expiry Date</label>
+                        <select id="expiryDate" required>
+                            <option value="">Select Expiry</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Premium (₹)</label>
+                        <input type="number" id="premium" step="0.05" placeholder="0.00" required oninput="updateOrderSummary()">
+                        <small style="opacity: 0.6; font-size: 11px;">Enter option premium price</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Lot Size</label>
+                        <input type="number" id="lotSize" value="50" step="1" placeholder="50" required oninput="updateOrderSummary()">
+                        <small style="opacity: 0.6; font-size: 11px;">NIFTY: 50, BANKNIFTY: 25</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Number of Lots</label>
+                        <input type="number" id="lots" value="1" step="1" placeholder="1" required oninput="updateOrderSummary()">
                     </div>
 
                     <div class="order-summary">
                         <div class="summary-row">
-                            <span>Price:</span>
-                            <span id="summaryPrice">₹0.00</span>
+                            <span>Premium:</span>
+                            <span id="summaryPremium">₹0.00</span>
                         </div>
                         <div class="summary-row">
-                            <span>Quantity:</span>
+                            <span>Lot Size:</span>
+                            <span id="summaryLotSize">0</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Lots:</span>
+                            <span id="summaryLots">0</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Total Quantity:</span>
                             <span id="summaryQty">0</span>
                         </div>
                         <div class="summary-row total">
-                            <span>Total:</span>
+                            <span>Total Cost:</span>
                             <span id="summaryTotal">₹0.00</span>
                         </div>
                     </div>
 
-                    <button type="submit" class="btn btn-buy" id="orderButton">BUY</button>
+                    <button type="submit" class="btn btn-buy" id="orderButton">BUY CALL</button>
                 </form>
             </div>
         </div>
@@ -702,7 +726,6 @@
         <div class="positions-section">
             <div class="section-tabs">
                 <button class="section-tab active" onclick="showTab('positions')">Positions</button>
-                <button class="section-tab" onclick="showTab('orders')">Orders</button>
                 <button class="section-tab" onclick="showTab('trades')">Trade History</button>
             </div>
 
@@ -711,39 +734,19 @@
                     <thead>
                         <tr>
                             <th>Symbol</th>
+                            <th>Type</th>
+                            <th>Strike</th>
                             <th>Qty</th>
-                            <th>Avg Price</th>
-                            <th>Current Price</th>
+                            <th>Avg Premium</th>
+                            <th>Current Premium</th>
                             <th>P&L</th>
                             <th>Action</th>
                         </tr>
                     </thead>
                     <tbody id="positionsBody">
                         <tr>
-                            <td colspan="6">
+                            <td colspan="8">
                                 <div class="empty-state">No open positions</div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div id="ordersTab" style="display:none;">
-                <table class="positions-table">
-                    <thead>
-                        <tr>
-                            <th>Symbol</th>
-                            <th>Type</th>
-                            <th>Side</th>
-                            <th>Qty</th>
-                            <th>Price</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="ordersBody">
-                        <tr>
-                            <td colspan="6">
-                                <div class="empty-state">No orders</div>
                             </td>
                         </tr>
                     </tbody>
@@ -755,7 +758,8 @@
                     <thead>
                         <tr>
                             <th>Symbol</th>
-                            <th>Side</th>
+                            <th>Type</th>
+                            <th>Strike</th>
                             <th>Qty</th>
                             <th>Entry</th>
                             <th>Exit</th>
@@ -764,7 +768,7 @@
                     </thead>
                     <tbody id="tradesBody">
                         <tr>
-                            <td colspan="6">
+                            <td colspan="7">
                                 <div class="empty-state">No trade history</div>
                             </td>
                         </tr>
@@ -790,26 +794,23 @@
     </div>
 
     <script>
-        // OptionXI API Configuration
-        const OPTIONXI_API = 'https://api.optionxi.com';
-        
-        // Market Data with Live NSE Integration
+        // Market Data
         const marketData = {
-            indian: {
-                symbols: ['RELIANCE', 'TCS', 'INFY', 'HDFCBANK', 'ICICIBANK', 'SBIN', 'BHARTIARTL', 'ITC', 'KOTAKBANK', 'LT'],
+            options: {
+                symbols: ['NIFTY', 'BANKNIFTY', 'FINNIFTY', 'RELIANCE', 'TCS', 'INFY', 'HDFCBANK', 'ICICIBANK'],
                 prices: {},
                 liveData: {},
                 currency: '₹',
                 defaultBalance: 1000000
             },
             crypto: {
-                symbols: ['BTC/USDT', 'ETH/USDT', 'SOL/USDT', 'BNB/USDT', 'XRP/USDT', 'ADA/USDT'],
+                symbols: ['BTC/USDT', 'ETH/USDT', 'SOL/USDT', 'BNB/USDT'],
                 prices: {},
                 currency: '$',
                 defaultBalance: 10000
             },
             forex: {
-                symbols: ['EUR/USD', 'GBP/USD', 'USD/JPY', 'AUD/USD', 'USD/CAD', 'NZD/USD'],
+                symbols: ['EUR/USD', 'GBP/USD', 'USD/JPY', 'AUD/USD'],
                 prices: {},
                 currency: '$',
                 defaultBalance: 10000
@@ -817,63 +818,101 @@
         };
 
         // App State
-        let currentMarket = 'indian';
-        let currentSymbol = 'RELIANCE';
+        let currentMarket = 'options';
+        let currentSymbol = 'NIFTY';
+        let optionType = 'call';
         let orderSide = 'buy';
         let editingMarket = null;
 
         let wallets = {
-            indian: 1000000,
+            options: 1000000,
             crypto: 10000,
             forex: 10000
         };
 
         let positions = [];
-        let orders = [];
         let trades = [];
 
-        // Fetch Live NSE Data from OptionXI API
+        // Generate expiry dates (next 4 Thursdays)
+        function generateExpiryDates() {
+            const dates = [];
+            const today = new Date();
+            let count = 0;
+            
+            for (let i = 0; i < 30 && count < 4; i++) {
+                const date = new Date(today);
+                date.setDate(today.getDate() + i);
+                
+                if (date.getDay() === 4) { // Thursday
+                    const formatted = date.toISOString().split('T')[0];
+                    const display = date.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+                    dates.push({ value: formatted, display: display });
+                    count++;
+                }
+            }
+            
+            const select = document.getElementById('expiryDate');
+            select.innerHTML = '<option value="">Select Expiry</option>' + 
+                dates.map(d => `<option value="${d.value}">${d.display}</option>`).join('');
+        }
+
+        // Fetch Live NSE Data using Yahoo Finance API (CORS-friendly)
         async function fetchLiveNSEData() {
             try {
-                const symbols = marketData.indian.symbols;
+                const symbols = marketData.options.symbols;
                 
                 for (const symbol of symbols) {
                     try {
-                        // Fetch quote data
-                        const response = await fetch(`${OPTIONXI_API}/quote/${symbol}`);
+                        // Use Yahoo Finance API with .NS suffix for NSE
+                        const yahooSymbol = symbol === 'NIFTY' ? '^NSEI' : 
+                                          symbol === 'BANKNIFTY' ? '^NSEBANK' : 
+                                          symbol === 'FINNIFTY' ? 'NIFTY_FIN_SERVICE.NS' :
+                                          `${symbol}.NS`;
+                        
+                        const response = await fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${yahooSymbol}?interval=1d&range=1d`);
                         
                         if (response.ok) {
                             const data = await response.json();
+                            const result = data.chart.result[0];
+                            const meta = result.meta;
+                            const quote = result.indicators.quote[0];
                             
-                            marketData.indian.liveData[symbol] = {
-                                lastPrice: data.lastPrice || data.ltp || 0,
-                                open: data.open || data.lastPrice || 0,
-                                high: data.dayHigh || data.high || 0,
-                                low: data.dayLow || data.low || 0,
-                                close: data.previousClose || data.close || 0,
-                                volume: data.totalTradedVolume || data.volume || 0,
-                                change: data.change || 0,
-                                pChange: data.pChange || 0
+                            const currentPrice = meta.regularMarketPrice || meta.previousClose;
+                            
+                            marketData.options.liveData[symbol] = {
+                                lastPrice: currentPrice,
+                                open: quote.open[0] || currentPrice,
+                                high: quote.high[0] || currentPrice,
+                                low: quote.low[0] || currentPrice,
+                                close: meta.previousClose || currentPrice,
+                                volume: quote.volume[0] || 0,
+                                change: currentPrice - meta.previousClose,
+                                pChange: ((currentPrice - meta.previousClose) / meta.previousClose * 100)
                             };
                             
-                            marketData.indian.prices[symbol] = data.lastPrice || data.ltp || 0;
-                        } else {
-                            // Fallback to simulated data if API fails
-                            if (!marketData.indian.prices[symbol]) {
-                                marketData.indian.prices[symbol] = 2000 + Math.random() * 1000;
-                            }
+                            marketData.options.prices[symbol] = currentPrice;
                         }
                     } catch (error) {
                         console.error(`Error fetching ${symbol}:`, error);
-                        // Use simulated data as fallback
-                        if (!marketData.indian.prices[symbol]) {
-                            marketData.indian.prices[symbol] = 2000 + Math.random() * 1000;
+                        // Fallback prices
+                        if (!marketData.options.prices[symbol]) {
+                            const fallbackPrices = {
+                                'NIFTY': 21500,
+                                'BANKNIFTY': 45000,
+                                'FINNIFTY': 19500,
+                                'RELIANCE': 2500,
+                                'TCS': 3500,
+                                'INFY': 1500,
+                                'HDFCBANK': 1600,
+                                'ICICIBANK': 950
+                            };
+                            marketData.options.prices[symbol] = fallbackPrices[symbol] || 1000;
                         }
                     }
                 }
                 
                 updateWatchlist();
-                if (currentMarket === 'indian') {
+                if (currentMarket === 'options') {
                     updateChart();
                 }
             } catch (error) {
@@ -881,31 +920,37 @@
             }
         }
 
-        // Initialize Crypto Prices (Simulated)
+        // Initialize Crypto Prices
         function initializeCryptoPrices() {
             marketData.crypto.symbols.forEach(symbol => {
                 const base = symbol.split('/')[0];
-                if (base === 'BTC') marketData.crypto.prices[symbol] = 45000 + Math.random() * 5000;
-                else if (base === 'ETH') marketData.crypto.prices[symbol] = 2500 + Math.random() * 500;
-                else marketData.crypto.prices[symbol] = 50 + Math.random() * 150;
+                if (base === 'BTC') marketData.crypto.prices[symbol] = 45000;
+                else if (base === 'ETH') marketData.crypto.prices[symbol] = 2500;
+                else if (base === 'SOL') marketData.crypto.prices[symbol] = 100;
+                else marketData.crypto.prices[symbol] = 300;
             });
         }
 
-        // Initialize Forex Prices (Simulated)
+        // Initialize Forex Prices
         function initializeForexPrices() {
+            const forexPrices = {
+                'EUR/USD': 1.0850,
+                'GBP/USD': 1.2650,
+                'USD/JPY': 149.50,
+                'AUD/USD': 0.6550
+            };
             marketData.forex.symbols.forEach(symbol => {
-                marketData.forex.prices[symbol] = 1 + Math.random() * 0.5;
+                marketData.forex.prices[symbol] = forexPrices[symbol] || 1.0;
             });
         }
 
-        // Load from localStorage
+        // Load Data
         function loadData() {
-            const saved = localStorage.getItem('tradingAppDataLive');
+            const saved = localStorage.getItem('optionsTradingData');
             if (saved) {
                 const data = JSON.parse(saved);
                 wallets = data.wallets || wallets;
                 positions = data.positions || [];
-                orders = data.orders || [];
                 trades = data.trades || [];
                 updateWalletDisplay();
                 updatePositionsDisplay();
@@ -913,12 +958,11 @@
             }
         }
 
-        // Save to localStorage
+        // Save Data
         function saveData() {
-            localStorage.setItem('tradingAppDataLive', JSON.stringify({
+            localStorage.setItem('optionsTradingData', JSON.stringify({
                 wallets,
                 positions,
-                orders,
                 trades
             }));
         }
@@ -945,24 +989,23 @@
             container.innerHTML = symbols.map(symbol => {
                 const price = marketData[currentMarket].prices[symbol] || 0;
                 let change = 0;
-                let changeClass = 'positive';
                 
-                if (currentMarket === 'indian' && marketData.indian.liveData[symbol]) {
-                    change = marketData.indian.liveData[symbol].pChange || 0;
+                if (currentMarket === 'options' && marketData.options.liveData[symbol]) {
+                    change = marketData.options.liveData[symbol].pChange || 0;
                 } else {
-                    change = (Math.random() - 0.5) * 5;
+                    change = (Math.random() - 0.5) * 2;
                 }
                 
-                changeClass = change >= 0 ? 'positive' : 'negative';
+                const changeClass = change >= 0 ? 'positive' : 'negative';
                 
                 return `
                     <div class="symbol-item ${symbol === currentSymbol ? 'active' : ''}" onclick="selectSymbol('${symbol}')">
                         <div>
                             <div class="symbol-name">${symbol}</div>
-                        </div>
-                        <div class="symbol-price">
-                            <div class="price-value">${currency}${price.toFixed(2)}</div>
-                            <div class="price-change ${changeClass}">${change >= 0 ? '+' : ''}${change.toFixed(2)}%</div>
+                            <div class="symbol-price">
+                                <div class="price-value">${currency}${price.toFixed(2)}</div>
+                                <div class="price-change ${changeClass}">${change >= 0 ? '+' : ''}${change.toFixed(2)}%</div>
+                            </div>
                         </div>
                     </div>
                 `;
@@ -985,39 +1028,26 @@
             document.getElementById('chartSymbol').textContent = currentSymbol;
             document.getElementById('chartPrice').textContent = `${currency}${price.toFixed(2)}`;
             
-            // Update meta data for Indian markets
-            if (currentMarket === 'indian' && marketData.indian.liveData[currentSymbol]) {
-                const data = marketData.indian.liveData[currentSymbol];
+            if (currentMarket === 'options' && marketData.options.liveData[currentSymbol]) {
+                const data = marketData.options.liveData[currentSymbol];
                 document.getElementById('openPrice').textContent = `${currency}${data.open.toFixed(2)}`;
                 document.getElementById('highPrice').textContent = `${currency}${data.high.toFixed(2)}`;
                 document.getElementById('lowPrice').textContent = `${currency}${data.low.toFixed(2)}`;
-                document.getElementById('volume').textContent = data.volume.toLocaleString();
+                document.getElementById('volume').textContent = (data.volume / 1000000).toFixed(2) + 'M';
             } else {
                 document.getElementById('openPrice').textContent = '-';
                 document.getElementById('highPrice').textContent = '-';
                 document.getElementById('lowPrice').textContent = '-';
                 document.getElementById('volume').textContent = '-';
             }
-            
-            // Simple chart simulation
-            const canvas = document.getElementById('priceChart');
-            const ctx = canvas.getContext('2d');
-            canvas.width = canvas.parentElement.clientWidth;
-            canvas.height = 400;
-            
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.strokeStyle = '#26a69a';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            
-            const points = 50;
-            for (let i = 0; i < points; i++) {
-                const x = (canvas.width / points) * i;
-                const y = canvas.height / 2 + (Math.sin(i / 5) * 50) + (Math.random() - 0.5) * 30;
-                if (i === 0) ctx.moveTo(x, y);
-                else ctx.lineTo(x, y);
-            }
-            ctx.stroke();
+        }
+
+        // Select Option Type
+        function selectOptionType(type) {
+            optionType = type;
+            document.querySelectorAll('.option-type-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            updateOrderButton();
         }
 
         // Set Order Side
@@ -1025,45 +1055,50 @@
             orderSide = side;
             document.querySelectorAll('.order-tab').forEach(tab => tab.classList.remove('active'));
             event.target.classList.add('active');
-            
+            updateOrderButton();
+        }
+
+        // Update Order Button
+        function updateOrderButton() {
             const button = document.getElementById('orderButton');
-            if (side === 'buy') {
-                button.className = 'btn btn-buy';
-                button.textContent = 'BUY';
-            } else {
-                button.className = 'btn btn-sell';
-                button.textContent = 'SELL';
-            }
+            const typeText = optionType === 'call' ? 'CALL' : 'PUT';
+            const sideText = orderSide === 'buy' ? 'BUY' : 'SELL';
+            
+            button.textContent = `${sideText} ${typeText}`;
+            button.className = orderSide === 'buy' ? 'btn btn-buy' : 'btn btn-sell';
         }
 
         // Update Order Summary
         function updateOrderSummary() {
-            const qty = parseFloat(document.getElementById('quantity').value) || 0;
-            const orderType = document.getElementById('orderType').value;
-            const limitPrice = parseFloat(document.getElementById('limitPrice').value) || 0;
+            const premium = parseFloat(document.getElementById('premium').value) || 0;
+            const lotSize = parseInt(document.getElementById('lotSize').value) || 0;
+            const lots = parseInt(document.getElementById('lots').value) || 0;
+            const totalQty = lotSize * lots;
+            const total = premium * totalQty;
             
-            const price = orderType === 'limit' ? limitPrice : (marketData[currentMarket].prices[currentSymbol] || 0);
-            const total = price * qty;
-            const currency = marketData[currentMarket].currency;
-            
-            document.getElementById('summaryPrice').textContent = `${currency}${price.toFixed(2)}`;
-            document.getElementById('summaryQty').textContent = qty;
-            document.getElementById('summaryTotal').textContent = `${currency}${total.toFixed(2)}`;
-            
-            // Show/hide limit price field
-            const limitGroup = document.getElementById('limitPriceGroup');
-            limitGroup.style.display = orderType === 'limit' ? 'block' : 'none';
+            document.getElementById('summaryPremium').textContent = `₹${premium.toFixed(2)}`;
+            document.getElementById('summaryLotSize').textContent = lotSize;
+            document.getElementById('summaryLots').textContent = lots;
+            document.getElementById('summaryQty').textContent = totalQty;
+            document.getElementById('summaryTotal').textContent = `₹${total.toFixed(2)}`;
         }
 
         // Place Order
         function placeOrder(e) {
             e.preventDefault();
             
-            const qty = parseFloat(document.getElementById('quantity').value);
-            const orderType = document.getElementById('orderType').value;
-            const limitPrice = parseFloat(document.getElementById('limitPrice').value) || 0;
-            const price = orderType === 'limit' ? limitPrice : (marketData[currentMarket].prices[currentSymbol] || 0);
-            const total = price * qty;
+            const strikePrice = parseFloat(document.getElementById('strikePrice').value);
+            const expiryDate = document.getElementById('expiryDate').value;
+            const premium = parseFloat(document.getElementById('premium').value);
+            const lotSize = parseInt(document.getElementById('lotSize').value);
+            const lots = parseInt(document.getElementById('lots').value);
+            const totalQty = lotSize * lots;
+            const total = premium * totalQty;
+            
+            if (!expiryDate) {
+                alert('Please select expiry date!');
+                return;
+            }
             
             if (orderSide === 'buy') {
                 if (wallets[currentMarket] < total) {
@@ -1073,58 +1108,64 @@
                 
                 wallets[currentMarket] -= total;
                 
-                // Add to positions
-                const existingPos = positions.find(p => p.market === currentMarket && p.symbol === currentSymbol && p.side === 'buy');
-                if (existingPos) {
-                    const totalQty = existingPos.quantity + qty;
-                    existingPos.avgPrice = ((existingPos.avgPrice * existingPos.quantity) + (price * qty)) / totalQty;
-                    existingPos.quantity = totalQty;
-                } else {
-                    positions.push({
-                        id: Date.now(),
-                        market: currentMarket,
-                        symbol: currentSymbol,
-                        side: 'buy',
-                        quantity: qty,
-                        avgPrice: price,
-                        openedAt: new Date()
-                    });
-                }
+                positions.push({
+                    id: Date.now(),
+                    market: currentMarket,
+                    symbol: currentSymbol,
+                    optionType: optionType,
+                    strikePrice: strikePrice,
+                    expiryDate: expiryDate,
+                    side: 'buy',
+                    quantity: totalQty,
+                    lotSize: lotSize,
+                    lots: lots,
+                    avgPremium: premium,
+                    openedAt: new Date()
+                });
                 
-                alert(`✅ BUY order executed!\n${qty} ${currentSymbol} @ ${marketData[currentMarket].currency}${price.toFixed(2)}`);
+                alert(`✅ BUY ${optionType.toUpperCase()} order executed!\n${currentSymbol} ${strikePrice} ${optionType.toUpperCase()}\n${lots} Lots (${totalQty} Qty) @ ₹${premium.toFixed(2)}\nTotal: ₹${total.toFixed(2)}`);
             } else {
-                // Sell
-                const position = positions.find(p => p.market === currentMarket && p.symbol === currentSymbol && p.side === 'buy');
-                if (!position || position.quantity < qty) {
+                const position = positions.find(p => 
+                    p.market === currentMarket && 
+                    p.symbol === currentSymbol && 
+                    p.optionType === optionType &&
+                    p.strikePrice === strikePrice &&
+                    p.side === 'buy'
+                );
+                
+                if (!position || position.quantity < totalQty) {
                     alert('Insufficient position to sell!');
                     return;
                 }
                 
-                const pnl = (price - position.avgPrice) * qty;
+                const pnl = (premium - position.avgPremium) * totalQty;
                 wallets[currentMarket] += total;
                 
-                // Add to trades
                 trades.unshift({
                     market: currentMarket,
                     symbol: currentSymbol,
+                    optionType: optionType,
+                    strikePrice: strikePrice,
+                    expiryDate: expiryDate,
                     side: 'buy',
-                    quantity: qty,
-                    entryPrice: position.avgPrice,
-                    exitPrice: price,
+                    quantity: totalQty,
+                    entryPremium: position.avgPremium,
+                    exitPremium: premium,
                     pnl: pnl,
                     closedAt: new Date()
                 });
                 
-                // Update position
-                position.quantity -= qty;
+                position.quantity -= totalQty;
                 if (position.quantity === 0) {
                     positions = positions.filter(p => p.id !== position.id);
                 }
                 
-                alert(`✅ SELL order executed!\n${qty} ${currentSymbol} @ ${marketData[currentMarket].currency}${price.toFixed(2)}\nP&L: ${marketData[currentMarket].currency}${pnl.toFixed(2)}`);
+                alert(`✅ SELL ${optionType.toUpperCase()} order executed!\n${currentSymbol} ${strikePrice} ${optionType.toUpperCase()}\n${lots} Lots @ ₹${premium.toFixed(2)}\nP&L: ₹${pnl.toFixed(2)}`);
             }
             
             document.getElementById('orderForm').reset();
+            document.getElementById('lotSize').value = '50';
+            document.getElementById('lots').value = '1';
             updateOrderSummary();
             updateWalletDisplay();
             updatePositionsDisplay();
@@ -1134,7 +1175,7 @@
 
         // Update Wallet Display
         function updateWalletDisplay() {
-            document.getElementById('indianBalance').textContent = `₹${wallets.indian.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+            document.getElementById('optionsBalance').textContent = `₹${wallets.options.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
             document.getElementById('cryptoBalance').textContent = `$${wallets.crypto.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
             document.getElementById('forexBalance').textContent = `$${wallets.forex.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
         }
@@ -1145,23 +1186,25 @@
             const marketPositions = positions.filter(p => p.market === currentMarket);
             
             if (marketPositions.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state">No open positions</div></td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8"><div class="empty-state">No open positions</div></td></tr>';
                 return;
             }
             
             tbody.innerHTML = marketPositions.map(pos => {
-                const currentPrice = marketData[pos.market].prices[pos.symbol] || 0;
-                const pnl = (currentPrice - pos.avgPrice) * pos.quantity;
+                // Simulate current premium (in real app, fetch from API)
+                const currentPremium = pos.avgPremium * (1 + (Math.random() - 0.5) * 0.2);
+                const pnl = (currentPremium - pos.avgPremium) * pos.quantity;
                 const pnlClass = pnl >= 0 ? 'pnl-positive' : 'pnl-negative';
-                const currency = marketData[pos.market].currency;
                 
                 return `
                     <tr>
                         <td><strong>${pos.symbol}</strong></td>
+                        <td><span class="option-badge ${pos.optionType}">${pos.optionType.toUpperCase()}</span></td>
+                        <td>₹${pos.strikePrice}</td>
                         <td>${pos.quantity}</td>
-                        <td>${currency}${pos.avgPrice.toFixed(2)}</td>
-                        <td>${currency}${currentPrice.toFixed(2)}</td>
-                        <td class="${pnlClass}">${pnl >= 0 ? '+' : ''}${currency}${pnl.toFixed(2)}</td>
+                        <td>₹${pos.avgPremium.toFixed(2)}</td>
+                        <td>₹${currentPremium.toFixed(2)}</td>
+                        <td class="${pnlClass}">${pnl >= 0 ? '+' : ''}₹${pnl.toFixed(2)}</td>
                         <td><button class="close-btn" onclick="closePosition(${pos.id})">Close</button></td>
                     </tr>
                 `;
@@ -1173,20 +1216,23 @@
             const position = positions.find(p => p.id === posId);
             if (!position) return;
             
-            if (confirm(`Close position: ${position.quantity} ${position.symbol}?`)) {
-                const currentPrice = marketData[position.market].prices[position.symbol] || 0;
-                const pnl = (currentPrice - position.avgPrice) * position.quantity;
-                const total = currentPrice * position.quantity;
+            if (confirm(`Close position: ${position.symbol} ${position.strikePrice} ${position.optionType.toUpperCase()}?`)) {
+                const currentPremium = position.avgPremium * (1 + (Math.random() - 0.5) * 0.2);
+                const pnl = (currentPremium - position.avgPremium) * position.quantity;
+                const total = currentPremium * position.quantity;
                 
                 wallets[position.market] += total;
                 
                 trades.unshift({
                     market: position.market,
                     symbol: position.symbol,
+                    optionType: position.optionType,
+                    strikePrice: position.strikePrice,
+                    expiryDate: position.expiryDate,
                     side: position.side,
                     quantity: position.quantity,
-                    entryPrice: position.avgPrice,
-                    exitPrice: currentPrice,
+                    entryPremium: position.avgPremium,
+                    exitPremium: currentPremium,
                     pnl: pnl,
                     closedAt: new Date()
                 });
@@ -1198,32 +1244,26 @@
                 updateStats();
                 saveData();
                 
-                alert(`Position closed!\nP&L: ${marketData[position.market].currency}${pnl.toFixed(2)}`);
+                alert(`Position closed!\nP&L: ₹${pnl.toFixed(2)}`);
             }
         }
 
         // Update Stats
         function updateStats() {
-            let totalValue = 0;
+            let totalValue = wallets.options + wallets.crypto + wallets.forex;
             let totalPnL = 0;
             
-            // Calculate from positions
             positions.forEach(pos => {
-                const currentPrice = marketData[pos.market].prices[pos.symbol] || 0;
-                const posValue = currentPrice * pos.quantity;
-                const posPnL = (currentPrice - pos.avgPrice) * pos.quantity;
+                const currentPremium = pos.avgPremium * (1 + (Math.random() - 0.5) * 0.2);
+                const posValue = currentPremium * pos.quantity;
+                const posPnL = (currentPremium - pos.avgPremium) * pos.quantity;
                 totalValue += posValue;
                 totalPnL += posPnL;
             });
             
-            // Add wallet balances
-            totalValue += wallets.indian + wallets.crypto + wallets.forex;
-            
-            // Calculate from trades
             const tradePnL = trades.reduce((sum, t) => sum + t.pnl, 0);
             totalPnL += tradePnL;
             
-            // Win rate
             const winningTrades = trades.filter(t => t.pnl > 0).length;
             const winRate = trades.length > 0 ? (winningTrades / trades.length * 100).toFixed(1) : 0;
             
@@ -1239,14 +1279,11 @@
             event.target.classList.add('active');
             
             document.getElementById('positionsTab').style.display = 'none';
-            document.getElementById('ordersTab').style.display = 'none';
             document.getElementById('tradesTab').style.display = 'none';
             
             if (tab === 'positions') {
                 document.getElementById('positionsTab').style.display = 'block';
                 updatePositionsDisplay();
-            } else if (tab === 'orders') {
-                document.getElementById('ordersTab').style.display = 'block';
             } else if (tab === 'trades') {
                 document.getElementById('tradesTab').style.display = 'block';
                 updateTradesDisplay();
@@ -1259,22 +1296,22 @@
             const marketTrades = trades.filter(t => t.market === currentMarket);
             
             if (marketTrades.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state">No trade history</div></td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state">No trade history</div></td></tr>';
                 return;
             }
             
             tbody.innerHTML = marketTrades.map(trade => {
                 const pnlClass = trade.pnl >= 0 ? 'pnl-positive' : 'pnl-negative';
-                const currency = marketData[trade.market].currency;
                 
                 return `
                     <tr>
                         <td><strong>${trade.symbol}</strong></td>
-                        <td>${trade.side.toUpperCase()}</td>
+                        <td><span class="option-badge ${trade.optionType}">${trade.optionType.toUpperCase()}</span></td>
+                        <td>₹${trade.strikePrice}</td>
                         <td>${trade.quantity}</td>
-                        <td>${currency}${trade.entryPrice.toFixed(2)}</td>
-                        <td>${currency}${trade.exitPrice.toFixed(2)}</td>
-                        <td class="${pnlClass}">${trade.pnl >= 0 ? '+' : ''}${currency}${trade.pnl.toFixed(2)}</td>
+                        <td>₹${trade.entryPremium.toFixed(2)}</td>
+                        <td>₹${trade.exitPremium.toFixed(2)}</td>
+                        <td class="${pnlClass}">${trade.pnl >= 0 ? '+' : ''}₹${trade.pnl.toFixed(2)}</td>
                     </tr>
                 `;
             }).join('');
@@ -1312,35 +1349,13 @@
             document.getElementById('balanceModal').classList.remove('active');
         }
 
-        // Simulate price updates for crypto and forex
-        function simulatePriceUpdates() {
-            // Update crypto prices
-            marketData.crypto.symbols.forEach(symbol => {
-                const change = (Math.random() - 0.5) * marketData.crypto.prices[symbol] * 0.001;
-                marketData.crypto.prices[symbol] += change;
-            });
-            
-            // Update forex prices
-            marketData.forex.symbols.forEach(symbol => {
-                const change = (Math.random() - 0.5) * marketData.forex.prices[symbol] * 0.0005;
-                marketData.forex.prices[symbol] += change;
-            });
-            
-            if (currentMarket !== 'indian') {
-                updateWatchlist();
-                updateChart();
-                updatePositionsDisplay();
-                updateStats();
-            }
-        }
-
         // Initialize
         async function initialize() {
             loadData();
+            generateExpiryDates();
             initializeCryptoPrices();
             initializeForexPrices();
             
-            // Fetch live NSE data
             await fetchLiveNSEData();
             
             updateWatchlist();
@@ -1349,14 +1364,16 @@
             updatePositionsDisplay();
             updateStats();
             
-            // Refresh NSE data every 5 seconds
-            setInterval(fetchLiveNSEData, 5000);
+            // Refresh data every 10 seconds
+            setInterval(fetchLiveNSEData, 10000);
             
-            // Update crypto/forex every 2 seconds
-            setInterval(simulatePriceUpdates, 2000);
+            // Update positions P&L every 2 seconds
+            setInterval(() => {
+                updatePositionsDisplay();
+                updateStats();
+            }, 2000);
         }
 
-        // Start the app
         initialize();
     </script>
 </body>
